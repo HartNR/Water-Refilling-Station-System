@@ -30,8 +30,8 @@ CREATE TABLE water_supply (
     SupplyID INT AUTO_INCREMENT PRIMARY KEY,
     AvailableStock DECIMAL(10, 2) NOT NULL DEFAULT 0.00, -- in Liters/Gallons
     ProductionDate DATE,
-    ProductID INT,
-    FOREIGN KEY (ProductID) REFERENCES products(ProductID)
+    ProductID INT NOT NULL,
+    FOREIGN KEY (ProductID) REFERENCES products(ProductID) ON DELETE CASCADE
 );
 
 -- 5. CONTAINER INVENTORY Entity
@@ -39,31 +39,50 @@ CREATE TABLE container_inventory (
     ContainerID VARCHAR(50) PRIMARY KEY, -- String for barcode/QR
     ContainerType VARCHAR(50) NOT NULL,
     Capacity INT,
-    Status ENUM('Available', 'Borrowed', 'Returned') DEFAULT 'Available'
+    Status ENUM('Available', 'Borrowed') DEFAULT 'Available'
 );
 
 -- 6. TRANSACTION Entity (Central Hub)
 CREATE TABLE transactions (
     TransactionID INT AUTO_INCREMENT PRIMARY KEY,
-    UserID INT,
-    CustomerID INT,
+    UserID INT NOT NULL,
+    CustomerID INT NOT NULL,
     Date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    DeliveryDate DATETIME,
     ServiceType ENUM('Walk-in', 'Delivery') NOT NULL,
-    Quantity INT NOT NULL,
+    PaymentMethod VARCHAR(50),
+    MethodAmount DECIMAL(10,2),
+    ChangeAmount DECIMAL(10,2),
+    Status ENUM('Pending', 'Completed', 'Cancelled') DEFAULT 'Pending',
+    IsRush BOOLEAN DEFAULT FALSE,
     TotalAmount DECIMAL(10, 2) NOT NULL,
-    FOREIGN KEY (UserID) REFERENCES users(UserID),
-    FOREIGN KEY (CustomerID) REFERENCES customers(CustomerID)
+    FOREIGN KEY (UserID) REFERENCES users(UserID) ON DELETE CASCADE,
+    FOREIGN KEY (CustomerID) REFERENCES customers(CustomerID) ON DELETE CASCADE
+);
+
+CREATE TABLE transaction_items (
+    ItemID INT AUTO_INCREMENT PRIMARY KEY,
+    TransactionID INT NOT NULL,
+    ProductID INT NOT NULL,
+    Quantity INT NOT NULL,
+    UNIQUE (TransactionID, ProductID),
+    FOREIGN KEY (TransactionID) REFERENCES transactions(TransactionID) ON DELETE CASCADE,
+    FOREIGN KEY (ProductID) REFERENCES products(ProductID)
 );
 
 -- 7. BORROWED CONTAINER Entity (Tracks Relationship)
 CREATE TABLE borrowed_containers (
     BorrowID INT AUTO_INCREMENT PRIMARY KEY,
-    TransactionID INT,
-    ContainerID VARCHAR(50),
+    TransactionID INT NOT NULL,
+    ContainerID VARCHAR(50) NOT NULL,
     BorrowDate DATETIME DEFAULT CURRENT_TIMESTAMP,
     ReturnDate DATETIME NULL,
-    FOREIGN KEY (TransactionID) REFERENCES transactions(TransactionID),
-    FOREIGN KEY (ContainerID) REFERENCES container_inventory(ContainerID)
+    FOREIGN KEY (TransactionID) REFERENCES transactions(TransactionID) ON DELETE CASCADE,
+    FOREIGN KEY (ContainerID) REFERENCES container_inventory(ContainerID) ON DELETE CASCADE
 );
+
+-- Indexes for faster queries
+CREATE INDEX idx_transaction_user ON transactions(UserID);
+CREATE INDEX idx_transaction_customer ON transactions(CustomerID);
 
 INSERT INTO users (Username, Password, Role) VALUES ('admin', 'admin123', 'Admin');
