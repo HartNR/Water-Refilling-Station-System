@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartWater Pro Management</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div id="loginOverlay" class="login-overlay">
+        <div class="login-box">
+            <h2> SmartWater</h2>
+            <p>Please log in to continue</p>
+            <form id="loginForm" class="grid-form" style="margin-top: 1.5rem;">
+                <div class="form-group full-width">
+                    <input type="text" id="loginUsername" placeholder="Username (e.g., admin)" required>
+                </div>
+                <div class="form-group full-width">
+                    <input type="password" id="loginPassword" placeholder="Password (e.g., admin123)" required>
+                </div>
+                <div id="loginError" class="badge" style="display: none; background: #fee2e2; color: #991b1b; padding: 10px; margin-bottom: 10px;">Invalid credentials</div>
+                <div class="form-group full-width">
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Log In</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="appContainer" class="app-container" style="display: none;">
+        <aside class="sidebar">
+            <div class="brand">
+                <h2> SmartWater</h2>
+            </div>
+            <nav class="nav-menu">
+                <button class="nav-btn active" data-target="dashboard" id="btnDashboard">📊 Dashboard</button>
+                <button class="nav-btn" data-target="transactions">🛒 Transactions</button>
+                <button class="nav-btn" data-target="inventory">🛢️ Containers</button>
+                <button class="nav-btn" data-target="customers">👥 Customers</button>
+            </nav>
+            <div class="user-profile">
+                <p id="loggedInUser">👤 Admin User</p>
+                <small id="logoutBtn" style="cursor: pointer; text-decoration: underline;">Log out</small>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-header">
+                <h1>Overview</h1>
+                <div class="date-display" id="currentDate"></div>
+            </header>
+
+            <section id="dashboard" class="content-section active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Today's Sales</h3>
+                        <p class="stat-value" id="statSales">₱ 0.00</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Water Supply</h3>
+                        <p class="stat-value text-blue">850 Gal</p>
+                        <small>Status: Optimal</small>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Borrowed Containers</h3>
+                        <p class="stat-value text-orange">24</p>
+                        <small>Pending return</small>
+                    </div>
+                </div>
+
+                <div class="card mt-2">
+                    <h3>Recent Transactions</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Customer</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionTableBody">
+                            <tr><td colspan="5" style="text-align: center;">Loading transactions...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="transactions" class="content-section hidden">
+                <div class="card">
+                    <h3>Record New Transaction</h3>
+                    <form id="transactionForm" class="grid-form">
+                        <div class="form-group">
+                            <label>Customer Name</label>
+                            <input type="text" id="customerName" placeholder="Search or enter name..." required>
+                        </div>
+                        <div class="form-group">
+                            <label>Service Type</label>
+                            <select id="serviceType">
+                                <option value="Walk-in">Walk-in</option>
+                                <option value="Delivery">Delivery</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Quantity (Gallons)</label>
+                            <input type="number" id="quantity" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Total Amount (₱)</label>
+                            <input type="number" id="totalAmount" step="0.01" required>
+                        </div>
+                        <div class="form-group full-width text-right">
+                            <button type="submit" class="btn btn-primary">Save Transaction</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <section id="inventory" class="content-section hidden">
+                <div class="card">
+                    <h3>Container Inventory Module</h3>
+                    <p>Manage and track containers here.</p>
+                </div>
+            </section>
+            
+            <section id="customers" class="content-section hidden">
+                <div class="card">
+                    <h3>Customer Database</h3>
+                    <p>Manage customer records and addresses.</p>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
